@@ -92,4 +92,12 @@ This includes the data import & preprocessing in the sequence inferring part, an
 
 However, the core features, including the SCFT algorithm and the simulated annealing Monte Carlo process, were implemented without any AI model.
 
+## Other
 
+The Monte Carlo method for finding the binding site sequence is largely inspired by
+
+https://github.com/marianoimperatore/MeanFieldChromatin
+
+and
+
+Bianco, S., Lupiáñez, D. G., Chiariello, A. M., Annunziatella, C., Kraft, K., Schöpflin, R., Wittler, L., Andrey, G., Vingron, M., Pombo, A., Mundlos, S., & Nicodemi, M. (2018). Polymer physics predicts the e]ects of structural variants on chromatin architecture. Nature Genetics, 50(5), 662–667. https://doi.org/10.1038/s41588-018-0098-8
