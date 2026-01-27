@@ -67,7 +67,24 @@ def scft_iteration(Scft_params, wsr, qsr_initial, qsr_d_initial):
 
     return wsr, phi, phi_blocks, qsr, qsr_d, err, free_energy
 
-def scft_loop(Scft_params, wsr, qsr_initial, qsr_d_initial, diff, free_energy_hist, polymer_loop = False, return_qsr = True):
+def gaussian_com_2d(phi):
+
+    x_coord = xp.arange(phi.shape[0])
+    y_coord = xp.arange(phi.shape[1])
+
+    x_com = xp.sum(x_coord * xp.sum(phi, axis=1))/xp.sum(phi)
+    y_com = xp.sum(y_coord * xp.sum(phi, axis=0))/xp.sum(phi)
+    com = xp.array([x_com, y_com])
+
+    width_gaussian = phi.shape[0]/10 # narrower = larger denominator
+
+    x_coord = xp.arange(phi.shape[0])
+    y_coord = xp.arange(phi.shape[1])
+    X,Y = xp.meshgrid(x_coord, y_coord, indexing='ij')
+    gaussian = xp.exp(-((X-com[0])**2 + (Y-com[1])**2)/width_gaussian)
+    return gaussian/xp.mean(gaussian)
+
+def scft_loop(Scft_params, wsr, qsr_initial, qsr_d_initial, diff, free_energy_hist, polymer_loop = False, return_qsr = True, tethered = False, tether_start = 0):
 
     for i in tqdm(range(Scft_params.iterations)):
         Scft_params.iteration = i
@@ -75,13 +92,16 @@ def scft_loop(Scft_params, wsr, qsr_initial, qsr_d_initial, diff, free_energy_hi
 
         diff.append(to_numpy(err))
         free_energy_hist.append(to_numpy(free_energy))
-
         #print(qsr.dtype)
 
-        if polymer_loop == True:
+        if (polymer_loop == True):
             phi_sr = qsr * qsr_d
-            qsr_initial = phi_sr[0] / xp.mean(phi_sr[0])
-            qsr_d_initial = phi_sr[-1] / xp.mean(phi_sr[-1])
+            if (tethered == False) or i<tether_start:
+                qsr_initial = (1-Scft_params.mixing_rate)*qsr_initial + Scft_params.mixing_rate*(phi_sr[0] / xp.mean(phi_sr[0]))
+                qsr_d_initial = (1-Scft_params.mixing_rate)*qsr_d_initial + Scft_params.mixing_rate*(phi_sr[-1] / xp.mean(phi_sr[-1]))
+            else: # tether
+                qsr_initial = (1 - Scft_params.mixing_rate) * qsr_initial + Scft_params.mixing_rate * gaussian_com_2d(qsr_d[0])
+                qsr_d_initial = (1 - Scft_params.mixing_rate) * qsr_initial + Scft_params.mixing_rate * gaussian_com_2d(qsr_d[-1])
 
         if np.isnan(to_numpy(err)):
             diff.append(100)
@@ -92,9 +112,9 @@ def scft_loop(Scft_params, wsr, qsr_initial, qsr_d_initial, diff, free_energy_hi
     else:
         return wsr, phi, phi_blocks, qsr_initial, qsr_d_initial, diff, free_energy_hist
 
-def initialization(Scft_params, shift, seed = 5652):
+def initialization(Scft_params, shift, seed = 7443):
     np.random.seed(seed)
-    wsr = 1e-3 * np.random.random((Scft_params.chain_interaction.shape[0], *Scft_params.initial_qsr.shape)) / Scft_params.N
+    wsr = 1e-2 * np.random.random((Scft_params.chain_interaction.shape[0], *Scft_params.initial_qsr.shape)) / Scft_params.N
     if use_cupy == True:
         wsr = cp.asarray(wsr, dtype=DTYPE)
     qsr_initial = Scft_params.initial_qsr

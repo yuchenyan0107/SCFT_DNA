@@ -16,6 +16,7 @@ def solve_qsr_2d(Scft_params, wsr, qsr_initial, reverse):
     exp_L = xp.exp(-Scft_params.ds/Scft_params.PB * D * ((2*xp.pi*kx)**2 + (2*xp.pi*ky)**2)) # diffusion operator in fourier space
 
     which_block = xp.argmax(Scft_params.chain_interaction, axis=0) # correlates s index to the segment type
+    which_block = which_block[:Scft_params.ns]
     if reverse:
         which_block = xp.flip(which_block)
     exponent_W = xp.exp(-wsr * Scft_params.ds /Scft_params.PB /2) # W operator for each types of segment
@@ -68,6 +69,7 @@ def solve_qsr_3d(Scft_params, wsr, qsr_initial, reverse):
     )) # diffusion operator in fourier space
 
     which_block = xp.argmax(Scft_params.chain_interaction, axis=0) # correlates s index to the segment type
+    which_block = which_block[:Scft_params.ns]
     if reverse:
         which_block = xp.flip(which_block)
     exponent_W = xp.exp(-wsr * Scft_params.ds /Scft_params.PB /2) # W operator for each types of segment
@@ -128,6 +130,7 @@ def solve_qsr_3d_neumann(Scft_params, wsr, qsr_initial, reverse):
     exp_L = xp.exp(-Scft_params.ds/Scft_params.PB * D * K2) # diffusion operator in fourier space
 
     which_block = xp.argmax(Scft_params.chain_interaction, axis=0) # correlates s index to the segment type
+    which_block = which_block[:Scft_params.ns]
     if reverse:
         which_block = xp.flip(which_block)
     exponent_W = xp.exp(-wsr * Scft_params.ds /Scft_params.PB /2) # W operator for each types of segment

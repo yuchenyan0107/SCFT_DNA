@@ -39,3 +39,20 @@ def contstruct_contact_matrix(
     contact_matrix[zero_class_matrix] = coil_profile[distance_matrix[zero_class_matrix]]
 
     return contact_matrix
+
+import numpy as np
+from scipy.ndimage import zoom
+
+def resize_square(A, out_size, order=1, mode="reflect"):
+    """
+    Resize a 2D square array to (out_size, out_size) using scipy.ndimage.zoom.
+    """
+    A = np.asarray(A)
+    if A.ndim != 2 or A.shape[0] != A.shape[1]:
+        raise ValueError(f"Expected a square 2D array, got {A.shape}")
+
+    z = out_size / A.shape[0]
+    B = zoom(A, (z, z), order=order, mode=mode)
+
+    # Force exact shape in case of rounding differences
+    return B[:out_size, :out_size]

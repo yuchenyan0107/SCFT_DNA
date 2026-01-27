@@ -63,18 +63,30 @@ def plot_phi_blocks_periodic(phi_blocks,
     plt.show()
 
 @njit(parallel=True)
-def pair_correlation_2D_vectorized_numba(rho):
-    ns_plus_1, nx, ny = rho.shape
+def pair_correlation_2D(rho):
+    ns_plus_1 = rho.shape[0]
     correlation_function = np.zeros((ns_plus_1, ns_plus_1))
 
-    # 2) Double loop over segment indices in parallel
+    #rho = rho/np.mean(rho, axis = (1,2))[:, None, None]
+    rho = rho/np.mean(rho)
+
     for i in prange(ns_plus_1):
         for k in prange(ns_plus_1):
-            # Sum over x, y in one go:
             correlation_function[i, k] = np.sum(rho[i] * rho[k])
 
-    # 3) Divide by (nx*ny)
-    correlation_function /= (nx * ny)
+    return correlation_function / (rho.shape[1]*rho.shape[2])
 
-    # 4) Subtract mean
-    return correlation_function - np.mean(correlation_function)
+def radius_of_gyration(phi):
+    x_coord = np.arange(phi.shape[0])
+    y_coord = np.arange(phi.shape[1])
+
+    x_com = np.sum(x_coord * np.sum(phi, axis=1))/np.sum(phi)
+    y_com = np.sum(y_coord * np.sum(phi, axis=0))/np.sum(phi)
+    com = np.array([x_com, y_com])
+
+    x_distance_square_off_com = (x_coord - com[0])**2
+    y_distance_square_off_com = (y_coord - com[1])**2
+    distance_square_map = x_distance_square_off_com[:, None] + y_distance_square_off_com[None, :]
+
+    rog = np.sqrt(np.sum(distance_square_map * phi)/np.sum(phi))
+    return rog, com

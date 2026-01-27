@@ -29,7 +29,7 @@ def zoom_nearest(y: np.ndarray, new_len: int) -> np.ndarray:
     nearest_idx = np.clip(nearest_idx, 0, old_len - 1)
     return y[nearest_idx]
 
-def IMR90_data(ns, split_class_zero = True, plotting_style_bead = True):
+def IMR90_data(ns, split_class_zero = True, plotting_style_bead = True, clip = None):
     df = pd.read_csv('inferred_sequence/polymer_IMR90.bed', sep='\t', header=None, names=['pos', 'state'])
 
     # Identify unique states and sort them
@@ -73,6 +73,10 @@ def IMR90_data(ns, split_class_zero = True, plotting_style_bead = True):
     # --------------------------------------------
 
     chain_interaction_binary = np.array(chain_interaction_binary)
+    print(chain_interaction_binary.shape)
+
+    if clip is not None:
+        chain_interaction_binary = chain_interaction_binary[:, clip[0]:clip[1]]
 
     n_classes, n_indices = chain_interaction_binary.shape[0], chain_interaction_binary.shape[1]
     y = chain_interaction_binary  # replace with your array
@@ -141,16 +145,41 @@ def onehot_to_color_labels(arr):
     m, nx = arr.shape
     col_sum = arr.sum(axis=0)
 
-    '''# each bead (column) should have exactly one 1
-    if not np.all(col_sum == 1):
-        bad = np.where(col_sum != 1)[0]
-        raise ValueError(
-            f"Not one-hot for bead indices (showing up to 10): {bad[:10].tolist()}"
-        )'''
-
     labels0 = arr.argmax(axis=0)  # 0..m-1
     # optional extra check: winning entry really is 1
     if not np.all(arr[labels0, np.arange(nx)] == 1):
         raise ValueError("Invalid one-hot encoding detected.")
 
     return labels0
+
+import numpy as np
+
+def colors_to_onehot(colors, m=None):
+    """
+    Convert a 1D array of color indices (1..m) to a one-hot matrix of shape (m, nx).
+
+    Parameters
+    ----------
+    colors : array-like, shape (nx,)
+        Color index for each bead (1-based: 1..m).
+    m : int, optional
+        Number of colors. If None, inferred as colors.max().
+
+    Returns
+    -------
+    onehot : ndarray, shape (m, nx)
+        onehot[i, j] = 1 if colors[j] == i+1 else 0
+    """
+    colors = np.asarray(colors)
+
+    nx = colors.shape[0]
+    if m is None:
+        m = int(colors.max())
+
+    onehot = np.zeros((m, nx), dtype=int)
+    # convert to 0-based indices for rows
+    row_idx = colors - 1
+    col_idx = np.arange(nx)
+    onehot[row_idx, col_idx] = 1
+
+    return onehot

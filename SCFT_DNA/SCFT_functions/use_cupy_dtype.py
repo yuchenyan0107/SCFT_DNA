@@ -1,6 +1,7 @@
 import numpy as np
 
 use_cupy = True
+#use_cupy = False
 if use_cupy:
 
     try:

@@ -3,3 +3,4 @@ from .computation_functions import *
 from .plots_2d import *
 from .loop_function import *
 from .use_cupy_dtype import *
+from .result_analysis import *

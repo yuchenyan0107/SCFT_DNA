@@ -225,8 +225,8 @@ def calculate_free_energy(Scft_params, wsr, phi_blocks, Qc, ws):
         entropy_solvent = (1 - Scft_params.phibar) * xp.log(Qs)
     else:
         entropy_polymer = Scft_params.phibar * xp.log(Qc/Scft_params.phibar)
-        ws /= Scft_params.N
-        Qs = xp.sum(xp.exp(-ws)) * integral_divide_by_volume
+        ws_scaled = ws / Scft_params.N
+        Qs = xp.sum(xp.exp(-ws_scaled)) * integral_divide_by_volume
         entropy_solvent = Scft_params.N * (1-Scft_params.phibar) * xp.log(Qs)
 
     phi_p = xp.sum(phi_blocks, axis = 0)
