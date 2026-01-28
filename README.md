@@ -1,6 +1,6 @@
 # SCFT_DNA
 
-In this project we modeled the chromosome organization with self-consistent field theory of polymers. 
+In this project, we modeled the chromosome organization with the self-consistent field theory of polymers. 
 
 The full report can be found in `docs/Thesis_Public.pdf`, where more details about the algorithms and background are introduced.
 
@@ -26,7 +26,7 @@ and result interpretation of polymer conformation.
     - `QSR_solvers.py` - MDE pseudo-spectrum solvers; periodical BC for 2D and 3D, and no-flux BC for 3D
     - `QSR_dct.py` - no-flux BC for 2D
     - `loop_functions.py` - SCFT iteration process
-  - `ABC_triblock/` - The ABC triblock copolymer example used as benchmark
+  - `ABC_triblock/` - The ABC triblock copolymer example used as a benchmark
     - `2D_SCFT_ABC.ipynb` - An example of the ABC polymer self-assembly computation.
     - `2D_ABC_parameter_sweep` - The parameter sweep demonstrating **free energy landscape in phase transition** vs $\chi_{PS}N$.
   - `2D_IMR90_parameter_sweep_phibar01.ipynb` - The parameter sweep of chromatin model (2 Mb segment) of $\chi_{PS}N$ and $\chi_{PP}N$.
@@ -37,15 +37,17 @@ and result interpretation of polymer conformation.
     - `density_map.ipynb` - Polymer conformation and block localization in the $\chi_{PS}N$ and $\chi_{PP}N$ parameter sweep.
     - `AB_compartment_free_energy.ipynb` - Free energy change in the $\chi_{\text{offset}}N$ parameter sweep for A/B compartment analysis.
   - `3D_SCFT_IMR90` - 3D simulation for the 12 Mb segment.
-  - `block_isosurface_IMR90.html` - 3D interactive plot of isosurface of polymer blocks.
+  - `block_isosurface_IMR90.html` - 3D interactive plot of the isosurface of polymer blocks.
   - `contour_isosurfaces.html` - 3D interactive plot of isosurface of polymer contour density distribution.
   - `DNA_input/` import sequence inferred to SCFT
 
 ## Project introduction
 
-In this project, we implemented a two-part computational pipeline that connects the Hi-C maps to chromosomal spatial distributions during the interphase. 
-The first part uses Monte Carlo method to infer the chromatin “binding-site” sequence (figure 1) which represents the effective interaction pattern along the locus that gives rise to the Hi-C map. 
-The second part uses self-consistent field theory (SCFT) of polymers to predict the spatial distribution of a chromatin polymer (2M bp), with the sequence inferred in the first part.
+In this project, we implemented a two-part computational pipeline that connects the Hi-C maps to chromosomal spatial distributions during interphase. 
+The first part uses the Monte Carlo method to infer the chromatin “binding-site” sequence (Figure 1), which represents the effective interaction pattern along the locus that gives rise to the Hi-C map. 
+The second part uses self-consistent field theory (SCFT) of polymers to predict the spatial distribution of a chromatin polymer. 
+The SCFT method has the advantage of predicting the phase behavior and free energy landscape, 
+enabling the comparison of the energy scale from single-molecule experiments and theoretical entropic and enthalpic contributions to the free energy.
 
 ![workflow_MC](docs/figures/workflow_MC.jpg)
 *Figure 1: Workflow of the Monte Carlo process that infers the binding-site sequence. 
@@ -54,11 +56,11 @@ The predict contact matrix constructed from the inferred sequence the resembles 
 The SCFT translates pairwise interactions between polymer segments into a chemical potential field and its conjugated polymer probability-density distribution (Figure 2a). 
 In our model, the chromatin (2M bp) is represented as a Gaussian chain, and the field is calculated from the Flory-Huggins mixing of the polymer segment types obtained from the part I. 
 From the SCFT solution, we computed the polymer density and sampled a representative single-chain conformation by following the positions of maximum polymer contour density (Figure 2c, d). 
-The contact map (contour density overlap map) of this conformation shows a high similarity to the experimental median-distance map (Figure 2b)
+The contact map (contour density overlap map) of this conformation shows a high similarity to the experimental median-distance map (Figure 2b).
 
 ![result_combined](docs/figures/SCFT_results_combined.jpg)
-*Figure 2: a) Schematic representation of SCFT framework. 
-b) Comparison of median-distance map (left) and the contact map calculate from the SCFT result (right). 
+*Figure 2: a) Schematic representation of the SCFT framework. 
+b) Comparison of the median-distance map (left) and the contact map calculated from the SCFT result (right). 
 c) Polymer density and most-probable single chain conformation (dark line). 
 d) One-dimensional slices of the contour probability density. The positions of the two slices are indicated in (c).*
 
@@ -68,7 +70,7 @@ Here we demonstrate how SCFT predicts polymer self-assembly with an ABC triblock
 The polymer consists of a first 10\% contour length block A being hydrophilic with ($\chi_{AS} = 0.5)$, 
 followed by a 15\% block B and a 75\% length block C that are hydrophobic, with $\chi_{BS} = 10$ and $\chi_{CS}$ ranging from 18 to 35. 
 The $\chi$ between blocks is 15.
-Figure 3b shows the polymer phase separate with solvent and self assemble into vesicles, where the most hydrophobic C part localized inside. 
+Figure 3b shows the polymer phase separated from the solvent and self-assembles into vesicles, where the most hydrophobic C part is localized inside. 
 
 Figure 3c shows the free energy, decomposed into enthalpic (interaction) and entropic contributions. 
 In the homogeneous phase, the enthalpic contribution increases approximately linearly with $\chi_{CS}N$, whereas the entropic contribution is nearly constant. 
@@ -87,8 +89,8 @@ c) Enthalpic, entropic, and total free energy of the system. The first order pha
 
 ## Disclaimer: AI usage
 
-Due to the time constrain, some of the code are implemented by ChatGPT or other AI models. 
-This includes the data import & preprocessing in the sequence inferring part, and some of the plots for the SCFT result analysis.
+Due to time constraints, some of the code is implemented using ChatGPT or other AI models. 
+This includes data import & preprocessing in the sequence inference part, as well as some plots for the SCFT result analysis.
 
 However, the core features, including the SCFT algorithm and the simulated annealing Monte Carlo process, were implemented without any AI model.
 
